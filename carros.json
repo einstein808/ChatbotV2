@@ -1,0 +1,90 @@
+[
+  {
+    "imagem": "url('https://storagew.mercadorweb.com.br/imagens/veiculos/42/2025/3/ford-fiesta-new-fiesta-1-5-16v-flex-mec-5p-2014-261431-18-sm.jpg')",
+    "titulo": "FORD FIESTA",
+    "descricao": "NEW FIESTA 1.5 16V FLEX MEC. 5P",
+    "anoModelo": "2013/2014",
+    "preco": "39.900",
+    "quilometragem": "167.599 km167.599 km",
+    "detalhes": {
+      "marca": "FORD",
+      "modelo": "Fiesta",
+      "km": "167.599 km",
+      "carroceria": "HATCH",
+      "motor": "1.5",
+      "cor": "PRETO",
+      "ano": "2014",
+      "câmbio": "Manual",
+      "revisado": "Sim",
+      "opcionais": [
+        "Ar Quente",
+        "Direção Elétrica",
+        "Travas Elétricas",
+        "Vidros Elétricos",
+        "Air Bag Duplo",
+        "Air bag motorista",
+        "Alarme"
+      ]
+    }
+  },
+  {
+    "imagem": "url('https://storagew.mercadorweb.com.br/imagens/veiculos/42/2025/3/volkswagen-crossfox-1-6-mi-total-flex-8v-5p-2015-264179-1-sm.jpg')",
+    "titulo": "VOLKSWAGEN CROSSFOX",
+    "descricao": "1.6 MI TOTAL FLEX 8V 5P",
+    "anoModelo": "2015/2015",
+    "preco": "51.900",
+    "quilometragem": "77.687 km77.687 km",
+    "detalhes": {
+      "marca": "VOLKSWAGEN",
+      "modelo": "CROSSFOX",
+      "km": "77.687 km",
+      "carroceria": "HATCH",
+      "motor": "1.6",
+      "cor": "BRANCO",
+      "ano": "2015",
+      "câmbio": "Manual",
+      "revisado": "Sim",
+      "opcionais": [
+        "Chave Reserva",
+        "Desembaçador traseiro",
+        "Faróis de Neblina",
+        "Computador de bordo",
+        "Ar Condicionado",
+        "Direção Elétrica",
+        "Travas Elétricas",
+        "Vidros Elétricos",
+        "Espelhos elétricos",
+        "Air Bag Duplo",
+        "Alarme",
+        "Freios ABS"
+      ]
+    }
+  },
+  {
+    "imagem": "url('https://storagew.mercadorweb.com.br/imagens/veiculos/42/2025/3/fiat-strada-volcano-1-3-flex-8v-cd-2021-264170-1-sm.jpg')",
+    "titulo": "FIAT STRADA",
+    "descricao": "VOLCANO 1.3 FLEX 8V CD",
+    "anoModelo": "2020/2021",
+    "preco": "97.900",
+    "quilometragem": "73.134 km73.134 km",
+    "detalhes": {
+      "marca": "FIAT",
+      "modelo": "Strada",
+      "km": "73.134 km",
+      "carroceria": "PICKUP",
+      "motor": "1.3",
+      "cor": "CINZA",
+      "ano": "2021",
+      "câmbio": "Manual",
+      "revisado": "Sim",
+      "opcionais": [
+        "Ar Condicionado",
+        "Ar Quente",
+        "Direção Hidráulica",
+        "Travas Elétricas",
+        "Vidros Elétricos",
+        "Air Bag Duplo"
+      ]
+    }
+  }
+]
