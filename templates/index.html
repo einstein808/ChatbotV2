@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚗 Sistema de Consulta de Carros com IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-btn {
+            padding: 15px 25px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            flex: 1;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .results-count {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .car-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: white;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .car-image {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .car-content {
+            padding: 20px;
+        }
+
+        .car-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .car-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .car-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+
+        .car-price {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #28a745;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .car-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .feature-tag {
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+
+        /* Chat Sidebar */
+        .chat-sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+            position: sticky;
+            top: 20px;
+        }
+
+        .chat-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+        }
+
+        .chat-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 6px;
+        }
+
+        .message.system {
+            align-self: center;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 12px 16px;
+            border-radius: 18px;
+            border-bottom-left-radius: 6px;
+            display: none;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .chat-input-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            resize: none;
+            max-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-send-btn {
+            padding: 12px 16px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 45px;
+            height: 45px;
+        }
+
+        .chat-send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .quick-questions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .quick-question {
+            padding: 8px 12px;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .quick-question:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+
+            .chat-sidebar {
+                height: 500px;
+                position: relative;
+                top: 0;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .filters {
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .cars-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <h1>🚗 Sistema de Consulta de Carros com IA</h1>
+                <p>Encontre o carro perfeito ou pergunte para nossa IA!</p>
+            </div>
+
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Digite sua busca (ex: Ford, ar condicionado, carro barato...)">
+                    <button onclick="searchCars()" class="search-btn">🔍 Buscar</button>
+                </div>
+
+                <div class="filters">
+                    <button class="filter-btn active" onclick="loadAllCars()">📋 Todos</button>
+                    <button class="filter-btn" onclick="filterCars('cheapest')">💰 Mais Barato</button>
+                    <button class="filter-btn" onclick="filterCars('expensive')">💎 Mais Caro</button>
+                    <button class="filter-btn" onclick="filterCars('lowest_km')">🆕 Menor KM</button>
+                    <button class="filter-btn" onclick="filterByBrand('ford')">🚗 Ford</button>
+                    <button class="filter-btn" onclick="filterByBrand('volkswagen')">🚙 Volkswagen</button>
+                    <button class="filter-btn" onclick="filterByBrand('fiat')">🚐 Fiat</button>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="results-header">
+                    <div class="results-count" id="resultsCount">Carregando...</div>
+                </div>
+
+                <div id="carsContainer" class="cars-grid">
+                    <div class="loading">Carregando carros...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Sidebar -->
+        <div class="chat-sidebar">
+            <div class="chat-header">
+                <h3>🤖 Assistente IA</h3>
+                <p>Pergunte sobre os carros!</p>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message system">
+                    👋 Olá! Sou seu assistente para consultas de carros. Você pode me perguntar sobre:
+                    <br><br>
+                    • Carros disponíveis<br>
+                    • Comparações de preços<br>
+                    • Carros com características específicas<br>
+                    • Recomendações personalizadas
+                </div>
+
+                <div class="quick-questions">
+                    <div class="quick-question" onclick="sendQuickQuestion('Quais carros estão disponíveis?')">
+                        Quais carros estão disponíveis?
+                    </div>
+                    <div class="quick-question" onclick="sendQuickQuestion('Qual é o carro mais barato?')">
+                        Qual é o carro mais barato?
+                    </div>
+                    <div class="quick-question" onclick="sendQuickQuestion('Mostre carros com ar condicionado')">
+                        Carros com ar condicionado
+                    </div>
+                    <div class="quick-question" onclick="sendQuickQuestion('Compare os preços dos Ford e Volkswagen')">
+                        Compare Ford vs Volkswagen
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <form class="chat-input-form" onsubmit="sendMessage(event)">
+                    <textarea 
+                        id="chatInput" 
+                        class="chat-input" 
+                        placeholder="Digite sua pergunta sobre carros..."
+                        rows="1"
+                        onkeydown="handleChatKeydown(event)"></textarea>
+                    <button type="submit" class="chat-send-btn" id="sendBtn">
+                        ➤
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allCars = [];
+        let chatHistory = [];
+
+        // Auto-resize textarea
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+
+        // Carregar carros ao iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllCars();
+            
+            // Enter para buscar
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchCars();
+                }
+            });
+        });
+
+        async function loadAllCars() {
+            try {
+                const response = await fetch('/api/cars');
+                allCars = await response.json();
+                displayCars(allCars);
+                setActiveFilter(0);
+            } catch (error) {
+                console.error('Erro ao carregar carros:', error);
+                document.getElementById('carsContainer').innerHTML = 
+                    '<div class="no-results">Erro ao carregar carros</div>';
+            }
+        }
+
+        async function searchCars() {
+            const query = document.getElementById('searchInput').value;
+            if (!query.trim()) {
+                loadAllCars();
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const cars = await response.json();
+                displayCars(cars);
+                setActiveFilter(-1);
+            } catch (error) {
+                console.error('Erro na busca:', error);
+            }
+        }
+
+        async function filterCars(filterType) {
+            try {
+                const response = await fetch(`/api/filter/${filterType}`);
+                const cars = await response.json();
+                displayCars(cars);
+            } catch (error) {
+                console.error('Erro no filtro:', error);
+            }
+        }
+
+        async function filterByBrand(brand) {
+            try {
+                const response = await fetch(`/api/brand/${brand}`);
+                const cars = await response.json();
+                displayCars(cars);
+            } catch (error) {
+                console.error('Erro no filtro por marca:', error);
+            }
+        }
+
+        function displayCars(cars) {
+            const container = document.getElementById('carsContainer');
+            const countElement = document.getElementById('resultsCount');
+            
+            countElement.textContent = `${cars.length} carro(s) encontrado(s)`;
+
+            if (cars.length === 0) {
+                container.innerHTML = '<div class="no-results">Nenhum carro encontrado</div>';
+                return;
+            }
+
+            const carsHtml = cars.map(car => `
+                <div class="car-card">
+                    <div class="car-image">
+                        📷 Imagem não disponível
+                    </div>
+                    <div class="car-content">
+                        <div class="car-title">${car.titulo}</div>
+                        <div class="car-description">${car.descricao}</div>
+                        
+                        <div class="car-details">
+                            <div class="detail-item">
+                                <span>📅</span> ${car.anoModelo}
+                            </div>
+                            <div class="detail-item">
+                                <span>🛣️</span> ${car.detalhes.km}
+                            </div>
+                            <div class="detail-item">
+                                <span>🎨</span> ${car.detalhes.cor}
+                            </div>
+                            <div class="detail-item">
+                                <span>⚙️</span> ${car.detalhes.cambio || car.detalhes.câmbio}
+                            </div>
+                        </div>
+
+                        <div class="car-price">R$ ${car.preco}</div>
+
+                        <div class="car-features">
+                            ${car.detalhes.opcionais.slice(0, 4).map(opcional => 
+                                `<span class="feature-tag">${opcional}</span>`
+                            ).join('')}
+                            ${car.detalhes.opcionais.length > 4 ? 
+                                `<span class="feature-tag">+${car.detalhes.opcionais.length - 4} mais</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = carsHtml;
+        }
+
+        function setActiveFilter(index) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if (index >= 0 && index < buttons.length) {
+                buttons[index].classList.add('active');
+            }
+        }
+
+        // Chat Functions
+        function handleChatKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage(event);
+            }
+        }
+
+        function sendQuickQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        async function sendMessage(event) {
+            if (event) event.preventDefault();
+            
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Add user message to chat
+            addMessageToChat('user', message);
+            input.value = '';
+            input.style.height = 'auto';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                // Send to LLM API (você precisará implementar este endpoint no Flask)
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        history: chatHistory
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Hide typing indicator
+                hideTypingIndicator();
+
+                if (data.success) {
+                    addMessageToChat('assistant', data.response);
+                    chatHistory.push({role: 'user', content: message});
+                    chatHistory.push({role: 'assistant', content: data.response});
+                } else {
+                    addMessageToChat('system', 'Desculpe, ocorreu um erro. Tente novamente.');
+                }
+
+            } catch (error) {
+                console.error('Erro no chat:', error);
+                hideTypingIndicator();
+                addMessageToChat('system', 'Erro de conexão. Verifique se o servidor LLM está ativo.');
+            }
+        }
+
+        function addMessageToChat(sender, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = message;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            const chatMessages = document.getElementById('chatMessages');
+            indicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            document.getElementById('sendBtn').disabled = true;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'none';
+            document.getElementById('sendBtn').disabled = false;
+        }
+
+        // Adicionar evento de clique aos botões de filtro
+        document.querySelectorAll('.filter-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => setActiveFilter(index));
+        });
+    </script>
+</body>
+</html>
